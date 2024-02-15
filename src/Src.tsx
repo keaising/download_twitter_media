@@ -42,7 +42,11 @@ const SrcList = () => {
   }, [imgSrcList]);
 
   async function download() {
-    await downloadURL(imgSrcList[0]);
+    let ps = imgSrcList.map((url, _) => downloadURL(url));
+    console.log(ps);
+    await Promise.all(ps).then((values) => {
+      console.log(values);
+    });
     console.log(imgList.length);
   }
 
