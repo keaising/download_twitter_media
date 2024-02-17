@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { GM_xmlhttpRequest } from "$";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 const SrcList = () => {
   const [imgSrcList, setImgSrcList] = useState<string[]>([]);
@@ -45,9 +47,18 @@ const SrcList = () => {
     let ps = imgSrcList.map((url, _) => downloadURL(url));
     console.log(ps);
     await Promise.all(ps).then((values) => {
-      console.log(values);
+      // console.log(values);
+      var zip = new JSZip();
+      var img = zip.folder("images");
+
+      values.forEach((v, i) => {
+        img.file(`${i}.jpg`, v);
+      });
+      zip.generateAsync({ type: "blob" }).then(function (content) {
+        // see FileSaver.js
+        saveAs(content, "example.zip");
+      });
     });
-    console.log(imgList.length);
   }
 
   async function downloadURL(url: string) {
