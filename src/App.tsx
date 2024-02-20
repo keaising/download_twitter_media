@@ -1,4 +1,3 @@
-import "./App.css";
 import { useEffect, useState } from "react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -72,10 +71,24 @@ function App() {
     });
   }
 
+  function shouldDisplay() {
+    const urlPattern = /^https:\/\/twitter\.com\/[^\/]+\/media/;
+    return urlPattern.test(window.location.href);
+  }
+
   return (
-    <div className="App fixed">
-      <button onClick={download}>download media</button>
-    </div>
+    <>
+      {shouldDisplay() && (
+        <div className="fixed top-2 right-2 text-center">
+          <button
+            className="bg-black text-white font-bold py-2 px-4 rounded-full"
+            onClick={download}
+          >
+            Download Media
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 
