@@ -39,36 +39,53 @@ function App() {
 
   async function download() {
     let ps = imgSrcList.map((url, _) => downloadURL(url));
-    console.log(ps);
-    await Promise.all(ps).then((values) => {
-      // console.log(values);
-      var zip = new JSZip();
-      var img = zip.folder("media");
+    let fetchs = await Promise.all(ps);
+    console.log("promise done", fetchs.length);
+    var zip = new JSZip();
+    var img = zip.folder("media");
 
-      values.forEach((data) => {
-        img!.file(`${data.name}.${data.format}`, data.data);
-      });
-      zip.generateAsync({ type: "blob" }).then(function (content) {
-        // see FileSaver.js
-        saveAs(content, `${window.location.pathname.split("/")[1]}.zip`);
-      });
+    console.log(1);
+    fetchs.forEach((data) => {
+      img!.file(`${data.name}.${data.format}`, data.data);
     });
+    console.log(2, img);
+    // console.log(3, zip.generateAsync({ type: "blob" }));
+    zip
+      .generateAsync({ type: "blob" })
+      .then((blob) => {
+        console.log(3);
+        saveAs(blob, `${window.location.pathname.split("/")[1]}.zip`);
+        console.log("blob size", blob.size);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        console.log("done");
+      });
   }
 
-  async function downloadURL(urlStr: string) {
+  async function downloadURL(urlStr: string): Promise<{
+    name: String;
+    format: String;
+    data: Blob;
+  }> {
     // https://pbs.twimg.com/media/GGw-LBGasAAtoMP?format=jpg&name=4096x4096
     let url = new URL(urlStr);
     let pathnames = url.pathname.split("/");
     let name = pathnames[pathnames.length - 1];
-    let format = url.searchParams.get("format");
+    let format = url.searchParams.get("format")!;
     url.searchParams.set("name", "large");
-    return fetch(url.toString()).then((resp) => {
-      return {
-        name: name,
-        format: format,
-        data: resp.blob(),
-      };
-    });
+    console.log("fetch data begin: ");
+    let f = await fetch(url.toString());
+    console.log("fetch data end: ");
+    let data = await f.blob();
+    console.log("data size: ", data.size);
+    return {
+      name: name,
+      format: format,
+      data: data,
+    };
   }
 
   function shouldDisplay() {
