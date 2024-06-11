@@ -89,7 +89,7 @@ function App() {
   }
 
   function shouldDisplay() {
-    const urlPattern = /^https:\/\/twitter\.com\/[^\/]+\/media/;
+    const urlPattern = /^https:\/\/x\.com\/[^\/]+\/media/;
     return urlPattern.test(window.location.href);
   }
 

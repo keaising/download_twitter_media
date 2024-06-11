@@ -10,7 +10,7 @@ export default defineConfig({
       entry: "src/main.tsx",
       userscript: {
         namespace: "download_twitter_media",
-        match: ["https://twitter.com/*"],
+        match: ["https://twitter.com/*", "https://x.com/*"],
       },
       build: {
         externalGlobals: {
